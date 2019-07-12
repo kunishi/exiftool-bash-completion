@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+__exiftool()
+{
+  local cur prev cword
+  COMPREPLY=()
+  _get_comp_words_by_ref -n : cur prev cword
+  opts="-args -argFormat -b -binary -c -coordFormat -charset -csv -d -dateFormat
+  -D -decimal -E -escapeHTML -escapeXML -ex -f -forcePrint -g -groupHeadings
+  -G -groupNames -h -htmlFormat -H -hex -htmlDump -j -json -l -long -L -latin
+  -lang -listItem -n --printConv -p -printFormat -php -s -short -S -veryShort
+  -sep -separator -sort -struct -t -tab -T -table -v -verbose -w -textOut
+  -W -tagOut -Wext -tagOutExt -X -xmlFormat
+  -a -duplicates -e --compsite -ee -extractEmbedded -ext -extension -F -fixBase
+  -fast -fileOrder -i -ignore -if -m -ignoreMinorErrors -o -out -overwrite_original
+  -overwrite_original_in_place -P -preserve -password -progress -q -quiet
+  -r -recurse -scanForXMP -u -unknown -U -unknown2 -wm -writeMode -z -zip
+  -\@ -k -pause -listw -listf -listwf -listg -listd -listx -verbose
+  -geotag -globalTimeShift -use -delete_original -restore_original
+  -api -common_args -config -echo -execute -srcfile -stay_open -userParam
+  -tagsFromFile -x"
+  charsets="UTF8 Latin Latin2 Cyrillic Greek Turkish Hebrew Arabic Baltic
+  Vietnam Thai DOSLatinUS DOSLatin1 MacRoman MacLatin2 MacCyrillic MacGreek
+  MacTurkish MacRomanian MacIceland MacCroatian"
+
+  if [ "${cword}" -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+  elif [ "${cword}" -eq 2 ]; then
+    if [ "${prev}" == "-tagsFromFile" ]; then
+      _filedir
+    elif [ "${prev}" == "-charset" ]; then
+      COMPREPLY=( $(compgen -W "${charsets}" -- "${cur}") )
+    fi
+  else
+    _filedir
+  fi
+  return 0
+} &&
+complete -F __exiftool -o bashdefault -o default exiftool
